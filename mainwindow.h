@@ -60,9 +60,9 @@ private:
                                 const QString &langCode,
                                 const QString &tooltip);
     QWidget    *makeTopBar(bool hasBack,
-                            bool hasHelp,
-                            bool hasLang,
-                            const QString &flagObjectName = QString());
+                        bool hasHelp,
+                        bool hasLang,
+                        const QString &flagObjectName = QString());
 
     // Navigation
     void navigateTo(int pageIndex);
@@ -70,6 +70,15 @@ private:
     void goToWelcome();
     void goToPayment();
     void goToReceipt();
+
+    //Items
+    QVBoxLayout *m_itemsList;
+    QLabel *m_subtotalLabel;
+    double m_total = 0.0;
+
+    void addItem(const QString &name, int qty, double price);
+    void onPayClicked();
+    void showBagDialog();
 };
 
 
