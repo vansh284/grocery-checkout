@@ -190,7 +190,7 @@ QWidget *MainWindow::buildWelcomePage()
     root->addLayout(flagsRow);
 
     // Subtitle
-    QLabel *subtitle = new QLabel("Select a language or main an item to start");
+    QLabel *subtitle = new QLabel("Select a language or scan an item to start");
     QFont subFont("Arial", 18, QFont::Bold);
     subtitle->setFont(subFont);
     subtitle->setAlignment(Qt::AlignCenter);
@@ -640,7 +640,7 @@ void MainWindow::onLanguageSelected(const QString &langCode)
         delete child;
     }
     m_total = 0.0;
-    m_subtotalLabel->setText("Subtotal: €0.00");
+    m_subtotalLabel->setText("€0.00");
 
     goToMain();
 }
