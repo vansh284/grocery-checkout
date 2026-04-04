@@ -10,10 +10,22 @@ CONFIG += c++17
 
 SOURCES += \
     main.cpp \
-    mainwindow.cpp
+    mainpage.cpp \
+    mainwindow.cpp \
+    page.cpp \
+    paymentpage.cpp \
+    receiptpage.cpp \
+    welcomepage.cpp
 
 HEADERS += \
-    mainwindow.h
+    cartdata.h \
+    mainpage.h \
+    mainwindow.h \
+    page.h \
+    paymentpage.h \
+    receiptpage.h \
+    style.h \
+    welcomepage.h
 
 FORMS += \
     mainwindow.ui

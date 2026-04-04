@@ -3,83 +3,58 @@
 
 #include <QMainWindow>
 #include <QStackedWidget>
-#include <QPushButton>
-#include <QLabel>
-#include <QHBoxLayout>
 #include <QStack>
+#include "cartdata.h"
 
-QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
-QT_END_NAMESPACE
+// 前置声明，加快编译速度
+class WelcomePage;
+class MainPage;
+class PaymentPage;
+class ReceiptPage;
 
-//  MainWindow
+enum PageIndex {
+    PAGE_WELCOME = 0,
+    PAGE_MAIN = 1,
+    PAGE_PAYMENT = 2,
+    PAGE_RECEIPT = 3
+};
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = nullptr);
+    MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
 private slots:
-    // Called when the user taps a language flag on the welcome page.
     void onLanguageSelected(const QString &langCode);
     void onBackClicked();
-    void onHelpClicked();
-    void onCashSelected();
-    void onCardSelected();
-    void onReceiptYesSelected();
-    void onReceiptNoSelected();
 
 private:
-    Ui::MainWindow *ui;
-
-    // Pages
     QStackedWidget *m_stack;
-    QWidget        *m_welcomePage;
-    QWidget        *m_mainPage;
-    QWidget        *m_paymentPage;
-    QWidget        *m_receiptPage;
-
-
-    static constexpr int PAGE_WELCOME = 0;
-    static constexpr int PAGE_MAIN    = 1;
-    static constexpr int PAGE_PAYMENT = 2;
-    static constexpr int PAGE_RECEIPT = 3;
-
-    // State
-    QString m_selectedLanguage;   // "en" | "fr" | "other"
+    CartData *m_cartData;
     QStack<int> m_pageHistory;
-
-    // Builder
-    QWidget    *buildWelcomePage();
-    QWidget    *buildMainPage();
-    QWidget    *buildPaymentPage();
-    QWidget    *buildReceiptPage();
-    QPushButton *makeFlagButton(const QString &emoji,
-                                const QString &langCode,
-                                const QString &tooltip);
-    QWidget    *makeTopBar(bool hasBack,
-                        bool hasHelp,
-                        bool hasLang,
-                        const QString &flagObjectName = QString());
-
-    // Navigation
     void navigateTo(int pageIndex);
-    void goToMain();
-    void goToWelcome();
-    void goToPayment();
-    void goToReceipt();
 
-    //Items
-    QVBoxLayout *m_itemsList;
-    QLabel *m_subtotalLabel;
-    double m_total = 0.0;
+    WelcomePage *m_welcomePage;
+    MainPage *m_mainPage;
+    PaymentPage *m_paymentPage;
+    ReceiptPage *m_receiptPage;
 
-    void addItem(const QString &name, int qty, double price);
-    void onPayClicked();
-    void showBagDialog();
+    // index
+    enum PageIndex {
+        PAGE_WELCOME = 0,
+        PAGE_MAIN = 1
+    };
+
+    void resetToWelcome()
+    {
+        m_pageHistory.clear();
+        m_stack->setCurrentIndex(PAGE_WELCOME); // DON'T use navigateTo() here.
+    }
+
+
 };
-
 
 #endif // MAINWINDOW_H
