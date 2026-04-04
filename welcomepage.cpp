@@ -12,7 +12,6 @@ WelcomePage::WelcomePage(CartData *cart, QWidget *parent)
     setAttribute(Qt::WA_StyledBackground, true);
     setStyleSheet(Style::pageSheet);
 
-    // 将 this 作为父组件，取代原代码中的 new QWidget()
     QVBoxLayout *root = new QVBoxLayout(this);
     root->setAlignment(Qt::AlignCenter);
     root->setSpacing(48);

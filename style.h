@@ -65,11 +65,25 @@ const QString backSheet = R"(
 // Add item button 1
 const QString itemSheet_1 = R"(
     QPushButton {
-        background-color: #F5C800; border: none; border-radius: 20px; padding-left: 24px;
+        background-color: #F5C800;
+        border: none;
+        border-radius: 20px;
+        padding-left: 24px;
     }
     QPushButton:hover { background-color: #F7DE50; }
     QPushButton:pressed { background-color: #EFC900; }
 )";
+
+// Add item button on Admin Page
+const QString itemSheet_2 = R"(
+            QPushButton {
+                background-color: #B0C4DE;
+                border: none;
+                border-radius: 20px;
+            }
+            QPushButton:hover { background-color: #B0D5F4; }
+            QPushButton:pressed { background-color: ##73bfff; }
+        )";
 }
 
 

@@ -6,17 +6,19 @@
 #include <QStack>
 #include "cartdata.h"
 
-// 前置声明，加快编译速度
+
 class WelcomePage;
 class MainPage;
 class PaymentPage;
 class ReceiptPage;
+class AdminPage;
 
 enum PageIndex {
-    PAGE_WELCOME = 0,
-    PAGE_MAIN = 1,
-    PAGE_PAYMENT = 2,
-    PAGE_RECEIPT = 3
+    PAGE_WELCOME    = 0,
+    PAGE_MAIN       = 1,
+    PAGE_PAYMENT    = 2,
+    PAGE_RECEIPT    = 3,
+    PAGE_ADMIN      = 4
 };
 
 class MainWindow : public QMainWindow
@@ -41,6 +43,8 @@ private:
     MainPage *m_mainPage;
     PaymentPage *m_paymentPage;
     ReceiptPage *m_receiptPage;
+    AdminPage *m_adminPage;
+
 
     // index
     enum PageIndex {

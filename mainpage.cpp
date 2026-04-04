@@ -380,3 +380,18 @@ void MainPage::onPayClicked()
     root->addWidget(card);
     dialog.exec();
 }
+
+void MainPage::refreshUI()
+{
+    QLayoutItem *child;
+    while ((child = m_itemsList->takeAt(0)) != nullptr) {
+        if (child->widget()) {
+            child->widget()->hide();          // hide first to avoid stuck
+            child->widget()->deleteLater();   // save destruction
+        }
+        delete child;
+    }
+
+    m_cart->clear();
+    m_subtotalLabel->setText("€0.00");
+}
