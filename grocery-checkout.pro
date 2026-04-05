@@ -10,6 +10,9 @@ CONFIG += c++17
 
 SOURCES += \
     adminpage.cpp \
+    categorypage.cpp \
+    helppage.cpp \
+    itemdetailpage.cpp \
     main.cpp \
     mainpage.cpp \
     mainwindow.cpp \
@@ -21,6 +24,9 @@ SOURCES += \
 HEADERS += \
     adminpage.h \
     cartdata.h \
+    categorypage.h \
+    helppage.h \
+    itemdetailpage.h \
     mainpage.h \
     mainwindow.h \
     page.h \
@@ -33,7 +39,7 @@ FORMS += \
     mainwindow.ui
 
 TRANSLATIONS += \
-    grocery-checkout_fr_FR.ts
+    grocery_new_fr_FR.ts
 CONFIG += lrelease
 CONFIG += embed_translations
 
