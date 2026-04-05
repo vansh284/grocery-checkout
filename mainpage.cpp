@@ -10,11 +10,10 @@ MainPage::MainPage(CartData *cart, QWidget *parent)
     : Page(cart,
            Style::BTN_YELLOW,
            Style::BG_YELLOW,
-           parent) 
+           parent)
 {
     QHBoxLayout *content = new QHBoxLayout();
     content->setSpacing(20);
-    // No need to set margins here. It has been set in the parent Page class for m_contentLayout.
 
     // --- LEFT SIDE: Scanned Items ---
     QVBoxLayout *left = new QVBoxLayout();
@@ -24,11 +23,10 @@ MainPage::MainPage(CartData *cart, QWidget *parent)
     listTitle->setFont(QFont("Arial", 24, QFont::Bold));
     left->addWidget(listTitle);
 
-    // Scroll area for items
     QScrollArea *scroll = new QScrollArea();
     scroll->setWidgetResizable(true);
     scroll->setStyleSheet("QScrollArea { border: none; background: transparent; }");
-    
+
     QWidget *scrollWidget = new QWidget();
     scrollWidget->setStyleSheet("background: transparent;");
     m_itemsList = new QVBoxLayout(scrollWidget);
@@ -37,7 +35,6 @@ MainPage::MainPage(CartData *cart, QWidget *parent)
     scroll->setWidget(scrollWidget);
     left->addWidget(scroll, 1);
 
-    // Subtotal
     QFrame *subtotalFrame = new QFrame();
     subtotalFrame->setFixedHeight(80);
     QHBoxLayout *subtotalLayout = new QHBoxLayout(subtotalFrame);
@@ -55,20 +52,18 @@ MainPage::MainPage(CartData *cart, QWidget *parent)
     subtotalLayout->addWidget(m_subtotalLabel);
     left->addWidget(subtotalFrame);
 
-    // PAY button
     QPushButton *payBtn = new QPushButton("PAY");
     payBtn->setFixedHeight(80);
     payBtn->setFont(QFont("Arial", 28, QFont::Bold));
     payBtn->setStyleSheet("background-color: #43A047; color: white; border-radius: 16px;");
     payBtn->setCursor(Qt::PointingHandCursor);
-    
+
     connect(payBtn, &QPushButton::clicked, this, &MainPage::onPayClicked);
     left->addWidget(payBtn);
 
     QWidget *leftWidget = new QWidget();
     leftWidget->setLayout(left);
     leftWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
 
     // --- RIGHT SIDE: Add Items ---
     QVBoxLayout *right = new QVBoxLayout();
@@ -78,7 +73,6 @@ MainPage::MainPage(CartData *cart, QWidget *parent)
     addTitle->setFont(QFont("Arial", 24, QFont::Bold));
     right->addWidget(addTitle);
 
-    // A Lambda that helps create buttons for adding items. 
     auto makeItemBtn = [&](QString text, QString emoji){
         QPushButton *btn = new QPushButton();
         btn->setFixedHeight(100);
@@ -104,9 +98,15 @@ MainPage::MainPage(CartData *cart, QWidget *parent)
     QPushButton *vegBtn   = makeItemBtn("Vegetables", "🥦");
     QPushButton *fruitBtn = makeItemBtn("Fruits", "🍎");
 
-    connect(breadBtn, &QPushButton::clicked, this, [=](){ addItem("Bread", 1, 1.50); });
-    connect(vegBtn, &QPushButton::clicked, this, [=](){ addItem("Vegetables", 1, 2.00); });
-    connect(fruitBtn, &QPushButton::clicked, this, [=](){ addItem("Fruits", 1, 1.75); });
+    connect(breadBtn, &QPushButton::clicked, this, [this]() {
+        emit categoryRequested("Bread");
+    });
+    connect(vegBtn, &QPushButton::clicked, this, [this]() {
+        emit categoryRequested("Vegetables");
+    });
+    connect(fruitBtn, &QPushButton::clicked, this, [this]() {
+        emit categoryRequested("Fruits");
+    });
 
     right->addWidget(breadBtn);
     right->addWidget(vegBtn);
@@ -116,25 +116,26 @@ MainPage::MainPage(CartData *cart, QWidget *parent)
     QWidget *rightWidget = new QWidget();
     rightWidget->setLayout(right);
 
-
-    // Combine left and right
     content->addWidget(leftWidget, 1);
     content->addWidget(rightWidget, 1);
 
-    // IMPORTANT: in the end, put all content inside m_contentLayout.
     m_contentLayout->addLayout(content);
 }
 
 void MainPage::addItem(const QString &name, int qty, double price)
 {
-    // update shared CartData data model (parent class's m_cart)
-    CartItem newItem = {name, qty, price};
+    CartItem newItem;
+    newItem.name = name;
+    newItem.qty = qty;
+    newItem.price = price;
+    newItem.weightKg = 0.0;
+    newItem.isWeighted = false;
+
     m_cart->items.append(newItem);
-    
+
     double itemTotal = qty * price;
     m_cart->total += itemTotal;
 
-    // create a new widget for this item, and add it to the list.
     QWidget *itemWidget = new QWidget();
     QHBoxLayout *itemLayout = new QHBoxLayout(itemWidget);
     itemLayout->setContentsMargins(12, 6, 12, 6);
@@ -155,7 +156,6 @@ void MainPage::addItem(const QString &name, int qty, double price)
     itemLayout->addWidget(nameLabel, 1);
     itemLayout->addWidget(priceLabel);
 
-    // Alternate background color for better readability
     if (m_itemsList->count() % 2 == 0)
         itemWidget->setStyleSheet("background-color: #FFFFFF; border-radius:8px;");
     else
@@ -163,7 +163,49 @@ void MainPage::addItem(const QString &name, int qty, double price)
 
     m_itemsList->addWidget(itemWidget);
 
-    // Update subtotal label.
+    m_subtotalLabel->setText("€" + QString::number(m_cart->total, 'f', 2));
+}
+
+void MainPage::addWeightedItem(const CategoryPage::WeightedItem &item, double weightKg)
+{
+    const double totalPrice = weightKg * item.unitPricePerKg;
+
+    CartItem newItem;
+    newItem.name = item.name;
+    newItem.qty = 1;
+    newItem.price = item.unitPricePerKg;   // 存单价
+    newItem.weightKg = weightKg;           // 存重量
+    newItem.isWeighted = true;             // 标记为称重商品
+
+    m_cart->items.append(newItem);
+    m_cart->total += totalPrice;
+
+    QWidget *itemWidget = new QWidget();
+    QHBoxLayout *itemLayout = new QHBoxLayout(itemWidget);
+    itemLayout->setContentsMargins(12, 6, 12, 6);
+
+    QLabel *qtyLabel = new QLabel(QString::number(weightKg, 'f', 3) + " kg");
+    qtyLabel->setFont(QFont("Arial", 18));
+    qtyLabel->setFixedWidth(100);
+
+    QLabel *nameLabel = new QLabel(item.name);
+    nameLabel->setFont(QFont("Arial", 18));
+
+    QLabel *priceLabel = new QLabel("€" + QString::number(totalPrice, 'f', 2));
+    priceLabel->setFont(QFont("Arial", 18));
+    priceLabel->setFixedWidth(100);
+    priceLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+
+    itemLayout->addWidget(qtyLabel);
+    itemLayout->addWidget(nameLabel, 1);
+    itemLayout->addWidget(priceLabel);
+
+    if (m_itemsList->count() % 2 == 0)
+        itemWidget->setStyleSheet("background-color: #FFFFFF; border-radius:8px;");
+    else
+        itemWidget->setStyleSheet("background-color: #E6E6E6; border-radius:8px;");
+
+    m_itemsList->addWidget(itemWidget);
     m_subtotalLabel->setText("€" + QString::number(m_cart->total, 'f', 2));
 }
 
@@ -173,13 +215,12 @@ void MainPage::showBagDialog()
     dialog.setWindowFlags(Qt::Dialog | Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
     dialog.setModal(true);
     dialog.setAttribute(Qt::WA_TranslucentBackground);
-    dialog.setFixedSize(900, 400); // wider window
+    dialog.setFixedSize(900, 400);
 
     QVBoxLayout *root = new QVBoxLayout(&dialog);
     root->setContentsMargins(0, 0, 0, 0);
     root->setSpacing(0);
 
-    // Card frame
     QFrame *card = new QFrame();
     card->setObjectName("bagCard");
     card->setStyleSheet(R"(
@@ -193,14 +234,12 @@ void MainPage::showBagDialog()
     cardLayout->setContentsMargins(40, 32, 40, 32);
     cardLayout->setSpacing(24);
 
-    // Title
     QLabel *title = new QLabel("Need bags?");
     title->setAlignment(Qt::AlignCenter);
     title->setFont(QFont("Arial", 28, QFont::Bold));
     title->setStyleSheet("color: #111111;");
     cardLayout->addWidget(title);
 
-    // Bag selection
     struct Bag {
         QString name;
         double price;
@@ -249,7 +288,6 @@ void MainPage::showBagDialog()
 
         bagsRow->addLayout(bagCol);
 
-        // Connections
         connect(plus, &QPushButton::clicked, this, [=, &bags]() mutable {
             bags[i].qty++;
             qtyLabel->setText(QString::number(bags[i].qty));
@@ -264,7 +302,6 @@ void MainPage::showBagDialog()
 
     cardLayout->addLayout(bagsRow);
 
-    // Buttons row
     QHBoxLayout *actionRow = new QHBoxLayout();
     actionRow->setSpacing(40);
     actionRow->setAlignment(Qt::AlignCenter);
@@ -283,14 +320,13 @@ void MainPage::showBagDialog()
         for (const auto &b : bags)
             if (b.qty > 0) addItem(b.name, b.qty, b.price);
         dialog.accept();
-        checkoutConfirmed();
+        emit checkoutConfirmed();
     });
 
     connect(returnBtn, &QPushButton::clicked, &dialog, &QDialog::accept);
 
     actionRow->addWidget(returnBtn);
     actionRow->addWidget(payBtn);
-
 
     cardLayout->addLayout(actionRow);
 
@@ -304,18 +340,16 @@ void MainPage::showBagDialog()
 
 void MainPage::onPayClicked()
 {
-    // Frameless dialog with custom shape
     QDialog dialog(this);
     dialog.setWindowFlags(Qt::Dialog | Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
     dialog.setModal(true);
-    dialog.setAttribute(Qt::WA_TranslucentBackground); // allows rounded corners
+    dialog.setAttribute(Qt::WA_TranslucentBackground);
     dialog.setFixedSize(520, 240);
 
     QVBoxLayout *root = new QVBoxLayout(&dialog);
     root->setContentsMargins(0, 0, 0, 0);
     root->setSpacing(0);
 
-    // Card frame is the entire dialog
     QFrame *card = new QFrame();
     card->setObjectName("scanConfirmCard");
     card->setStyleSheet(R"(
@@ -331,14 +365,12 @@ void MainPage::onPayClicked()
     cardLayout->setContentsMargins(40, 32, 40, 32);
     cardLayout->setSpacing(32);
 
-    // Title
     QLabel *title = new QLabel("Did you scan all your items?");
     title->setAlignment(Qt::AlignCenter);
     title->setFont(QFont("Arial", 28, QFont::Bold));
     title->setStyleSheet("color: #111111; background: transparent; border: none;");
     cardLayout->addWidget(title);
 
-    // Buttons row
     QHBoxLayout *btnRow = new QHBoxLayout();
     btnRow->setAlignment(Qt::AlignCenter);
     btnRow->setSpacing(40);
@@ -370,7 +402,7 @@ void MainPage::onPayClicked()
     });
 
     connect(noBtn, &QPushButton::clicked, &dialog, [&dialog]() {
-        dialog.accept(); // just close dialog
+        dialog.accept();
     });
 
     btnRow->addWidget(noBtn);
@@ -386,8 +418,8 @@ void MainPage::refreshUI()
     QLayoutItem *child;
     while ((child = m_itemsList->takeAt(0)) != nullptr) {
         if (child->widget()) {
-            child->widget()->hide();          // hide first to avoid stuck
-            child->widget()->deleteLater();   // save destruction
+            child->widget()->hide();
+            child->widget()->deleteLater();
         }
         delete child;
     }
