@@ -5,20 +5,26 @@
 #include <QStackedWidget>
 #include <QStack>
 #include "cartdata.h"
-
+#include "categorypage.h"
 
 class WelcomePage;
 class MainPage;
 class PaymentPage;
 class ReceiptPage;
 class AdminPage;
+class CategoryPage;
+class ItemDetailPage;
+class HelpPage;
 
 enum PageIndex {
-    PAGE_WELCOME    = 0,
-    PAGE_MAIN       = 1,
-    PAGE_PAYMENT    = 2,
-    PAGE_RECEIPT    = 3,
-    PAGE_ADMIN      = 4
+    PAGE_WELCOME     = 0,
+    PAGE_MAIN        = 1,
+    PAGE_PAYMENT     = 2,
+    PAGE_RECEIPT     = 3,
+    PAGE_ADMIN       = 4,
+    PAGE_CATEGORY    = 5,
+    PAGE_ITEM_DETAIL = 6,
+    PAGE_HELP        = 7
 };
 
 class MainWindow : public QMainWindow
@@ -34,31 +40,26 @@ private slots:
     void onBackClicked();
 
 private:
-    QStackedWidget *m_stack;
-    CartData *m_cartData;
+    QStackedWidget *m_stack = nullptr;
+    CartData *m_cartData = nullptr;
     QStack<int> m_pageHistory;
+
+    WelcomePage *m_welcomePage = nullptr;
+    MainPage *m_mainPage = nullptr;
+    PaymentPage *m_paymentPage = nullptr;
+    ReceiptPage *m_receiptPage = nullptr;
+    AdminPage *m_adminPage = nullptr;
+    CategoryPage *m_categoryPage = nullptr;
+    ItemDetailPage *m_itemDetailPage = nullptr;
+    HelpPage *m_helpPage = nullptr;
+
+    QString m_currentCategory;
+    QVector<CategoryPage::WeightedItem> m_currentCategoryItems;
+    double m_currentWeightKg = 0.0;
+
     void navigateTo(int pageIndex);
-
-    WelcomePage *m_welcomePage;
-    MainPage *m_mainPage;
-    PaymentPage *m_paymentPage;
-    ReceiptPage *m_receiptPage;
-    AdminPage *m_adminPage;
-
-
-    // index
-    enum PageIndex {
-        PAGE_WELCOME = 0,
-        PAGE_MAIN = 1
-    };
-
-    void resetToWelcome()
-    {
-        m_pageHistory.clear();
-        m_stack->setCurrentIndex(PAGE_WELCOME); // DON'T use navigateTo() here.
-    }
-
-
+    void resetToWelcome();
 };
 
 #endif // MAINWINDOW_H
+
