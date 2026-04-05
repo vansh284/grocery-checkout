@@ -7,8 +7,10 @@
 
 struct CartItem {
     QString name;
-    int qty;
-    double price; // single price
+    int qty = 1;
+    double price = 0.0;
+    double weightKg = 0.0;       // for weighted items
+    bool isWeighted = false;
 };
 
 class CartData
