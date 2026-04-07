@@ -39,7 +39,7 @@ FORMS += \
     mainwindow.ui
 
 TRANSLATIONS += \
-    grocery_new_fr_FR.ts
+    grocery-checkout_fr_FR.ts
 CONFIG += lrelease
 CONFIG += embed_translations
 
