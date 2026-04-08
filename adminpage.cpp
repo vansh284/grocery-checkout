@@ -10,6 +10,7 @@ AdminPage::AdminPage(CartData *cart, QWidget *parent)
     : Page(cart,
            Style::BTN_BLUE_1,
            Style::BG_BLUE,
+           false, false, false,
            parent)
 {
     QHBoxLayout *content = new QHBoxLayout();
@@ -90,8 +91,41 @@ AdminPage::AdminPage(CartData *cart, QWidget *parent)
         return btn;
     };
 
-    QPushButton *addPrice = makeMenuBtn("Price");
-    QPushButton *addCode   = makeMenuBtn("Manual Code Bar");
+    QPushButton *addPrice = makeMenuBtn("Manual Price");
+    QPushButton *addCode   = makeMenuBtn("Manual Barcode");
+
+    connect(addCode, &QPushButton::clicked, this, [this]() {
+        NumpadDialog dialog(NumpadDialog::BarcodeMode, this);
+        // dialog.exec() will stop the window, till the tick is pressed. QDialog::Accepted
+        if (dialog.exec() == QDialog::Accepted) {
+            QString inputCode = dialog.getBarcode();
+            // EXAMPLE: name=barcode, quantity=1, price=1
+            CartItem newItem;
+            newItem.name = inputCode;
+            newItem.qty = 1;
+            newItem.price = 1.00;
+            // refresh cart
+            m_cart->items.append(newItem);
+            m_cart->total += newItem.price;
+
+            loadCart();
+        }
+    });
+
+    connect(addPrice, &QPushButton::clicked, this, [this]() {
+        NumpadDialog dialog(NumpadDialog::PriceMode, this);
+        if (dialog.exec() == QDialog::Accepted) {
+            CartItem newItem;
+            newItem.name = "Manual Item";
+            newItem.qty = 1;
+            newItem.price = dialog.getPrice();
+            // refresh cart
+            m_cart->items.append(newItem);
+            m_cart->total += newItem.price;
+
+            loadCart();
+        }
+    });
 
 
     // LOG OUT Button
@@ -164,6 +198,28 @@ void AdminPage::addAdminItemUI(const QString &name, int qty, double price, int i
     deleteBtn->setFont(QFont("Arial", 16, QFont::Bold));
     deleteBtn->setStyleSheet("background-color: #E53935; color: white; border-radius: 16px;");
     deleteBtn->setCursor(Qt::PointingHandCursor);
+
+    connect(deleteBtn, &QPushButton::clicked, this, [this, index]() {
+        // 1. 安全检查，防止索引越界
+        if (index < 0 || index >= m_cart->items.size()) return;
+
+        // 2. 数量减 1
+        m_cart->items[index].qty--;
+
+        // 3. 如果数量减到 0，直接从列表中移除该项
+        if (m_cart->items[index].qty <= 0) {
+            m_cart->items.removeAt(index);
+        }
+
+        // 4. 重新计算购物车总价 (避免浮点数精度丢失导致奇怪的小数)
+        m_cart->total = 0.0;
+        for (const auto &item : std::as_const(m_cart->items)) {
+            m_cart->total += (item.price * item.qty);
+        }
+
+        // 5. 重新加载 UI，这会清空当前列表并根据更新后的 m_cart 重新生成
+        loadCart();
+    });
 
     QLabel *qtyLabel = new QLabel(QString::number(qty));
     qtyLabel->setFont(QFont("Arial", 18));

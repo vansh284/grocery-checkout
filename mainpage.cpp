@@ -427,3 +427,60 @@ void MainPage::refreshUI()
     m_cart->clear();
     m_subtotalLabel->setText("€0.00");
 }
+
+void MainPage::loadCart()
+{
+    // 1. clear old UI
+    QLayoutItem *child;
+    while ((child = m_itemsList->takeAt(0)) != nullptr) {
+        if (child->widget()) {
+            child->widget()->hide();
+            child->widget()->deleteLater();
+        }
+        delete child;
+    }
+
+    // 2. regenerate UI by reading m_cart, but doesn't change its data.
+    for (int i = 0; i < m_cart->items.size(); ++i) {
+        const CartItem &item = m_cart->items[i];
+
+        QWidget *itemWidget = new QWidget();
+        QHBoxLayout *itemLayout = new QHBoxLayout(itemWidget);
+        itemLayout->setContentsMargins(12, 6, 12, 6);
+
+        QLabel *qtyLabel = new QLabel();
+        double itemTotal = 0.0;
+
+        if (item.isWeighted) {
+            qtyLabel->setText(QString::number(item.weightKg, 'f', 3) + " kg");
+            qtyLabel->setFixedWidth(100);
+            itemTotal = item.weightKg * item.price; // price 是单价
+        } else {
+            qtyLabel->setText(QString::number(item.qty));
+            qtyLabel->setFixedWidth(40);
+            itemTotal = item.qty * item.price;
+        }
+        qtyLabel->setFont(QFont("Arial", 18));
+
+        QLabel *nameLabel = new QLabel(item.name);
+        nameLabel->setFont(QFont("Arial", 18));
+
+        QLabel *priceLabel = new QLabel("€" + QString::number(itemTotal, 'f', 2));
+        priceLabel->setFont(QFont("Arial", 18));
+        priceLabel->setFixedWidth(100);
+        priceLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+
+        itemLayout->addWidget(qtyLabel);
+        itemLayout->addWidget(nameLabel, 1);
+        itemLayout->addWidget(priceLabel);
+
+        if (i % 2 == 0)
+            itemWidget->setStyleSheet("background-color: #FFFFFF; border-radius:8px;");
+        else
+            itemWidget->setStyleSheet("background-color: #E6E6E6; border-radius:8px;");
+
+        m_itemsList->addWidget(itemWidget);
+    }
+
+    m_subtotalLabel->setText("€" + QString::number(m_cart->total, 'f', 2));
+}

@@ -2,6 +2,7 @@
 #define ADMINPAGE_H
 
 #include "page.h"
+#include "numpaddialog.h"
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QScrollArea>

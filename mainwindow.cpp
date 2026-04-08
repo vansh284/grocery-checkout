@@ -116,6 +116,7 @@ MainWindow::MainWindow(QWidget *parent)
     });
 
     connect(m_adminPage, &AdminPage::logoutClicked, this, [this]() {
+        m_mainPage->loadCart();
         onBackClicked();
     });
 

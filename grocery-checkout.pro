@@ -16,6 +16,7 @@ SOURCES += \
     main.cpp \
     mainpage.cpp \
     mainwindow.cpp \
+    numpaddialog.cpp \
     page.cpp \
     paymentpage.cpp \
     receiptpage.cpp \
@@ -29,6 +30,7 @@ HEADERS += \
     itemdetailpage.h \
     mainpage.h \
     mainwindow.h \
+    numpaddialog.h \
     page.h \
     paymentpage.h \
     receiptpage.h \
@@ -39,7 +41,7 @@ FORMS += \
     mainwindow.ui
 
 TRANSLATIONS += \
-    grocery-checkout_fr_FR.ts
+    # grocery_new_fr_FR.ts
 CONFIG += lrelease
 CONFIG += embed_translations
 

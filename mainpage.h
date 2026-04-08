@@ -11,7 +11,8 @@ class MainPage : public Page
     Q_OBJECT
 public:
     explicit MainPage(CartData *cart, QWidget *parent = nullptr);
-    void refreshUI();
+    void refreshUI();   // used only to clear cart
+    void loadCart();    // used to load and refresh cart
 
 signals:
     void checkoutConfirmed();
