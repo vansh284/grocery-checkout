@@ -7,8 +7,7 @@
 #include <QDebug>
 #include "style.h"
 
-
-WelcomePage::WelcomePage(CartData *cart, QWidget *parent) 
+WelcomePage::WelcomePage(CartData *cart, QWidget *parent)
     : QWidget(parent), m_cart(cart)
 {
     setObjectName("pageRoot");
@@ -23,6 +22,7 @@ WelcomePage::WelcomePage(CartData *cart, QWidget *parent)
     QLabel *title = new QLabel("WELCOME");
     title->setFont(QFont("Arial", 72, QFont::Bold));
     title->setAlignment(Qt::AlignCenter);
+    title->setStyleSheet("color: #111111;");
     root->addWidget(title);
 
     QHBoxLayout *flagsRow = new QHBoxLayout();
@@ -36,8 +36,9 @@ WelcomePage::WelcomePage(CartData *cart, QWidget *parent)
     root->addLayout(flagsRow);
 
     QLabel *subtitle = new QLabel("Select a language or scan an item to start");
-    subtitle->setFont(QFont("Arial", 18, QFont::Bold));
+    subtitle->setFont(QFont("Arial", 24, QFont::Bold));
     subtitle->setAlignment(Qt::AlignCenter);
+    subtitle->setStyleSheet("color: #111111;");
     root->addWidget(subtitle);
 }
 
@@ -56,7 +57,6 @@ QPushButton *WelcomePage::makeFlagButton(const QString &iconPath, const QString 
     btn->setStyleSheet(Style::flagButtonSheet(RADIUS));
     btn->setCursor(Qt::PointingHandCursor);
 
-    // CHANGE: emit signal, and update the language immediately.
     connect(btn, &QPushButton::clicked, this, [this, langCode]() {
         m_cart->language = langCode;
         emit languageSelected(langCode);
