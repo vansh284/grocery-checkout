@@ -21,13 +21,15 @@ CategoryPage::CategoryPage(CartData *cart, QWidget *parent)
     m_contentLayout->setContentsMargins(0, 20, 0, 20);
     m_contentLayout->setSpacing(0);
 
+    m_contentLayout->addSpacing(18);
+
     m_titleLabel = new QLabel("Category");
     m_titleLabel->setAlignment(Qt::AlignCenter);
     m_titleLabel->setFont(QFont("Arial", 40, QFont::Bold));
     m_titleLabel->setStyleSheet("color:#111111;");
     m_contentLayout->addWidget(m_titleLabel);
 
-    m_contentLayout->addSpacing(24);
+    m_contentLayout->addSpacing(34);
 
     QHBoxLayout *itemsRow = new QHBoxLayout();
     itemsRow->setContentsMargins(0, 0, 0, 0);
@@ -66,7 +68,7 @@ CategoryPage::CategoryPage(CartData *cart, QWidget *parent)
 
     m_contentLayout->addLayout(itemsRow);
 
-    m_contentLayout->addSpacing(80);
+    m_contentLayout->addSpacing(44);
 
     QHBoxLayout *weightRow = new QHBoxLayout();
     weightRow->setContentsMargins(0, 0, 0, 36);
@@ -132,52 +134,52 @@ QVector<CategoryPage::WeightedItem> CategoryPage::itemsForCategory(const QString
 {
     if (categoryName == "Fruits") {
         return {
-            {"Apple",      "🍎", 4.34},
-            {"Banana",     "🍌", 3.49},
-            {"Cherry",     "🍒", 8.20},
-            {"Date",       "🌰", 6.80},
-            {"Grape",      "🍇", 5.10},
-            {"Lemon",      "🍋", 3.60},
-            {"Mango",      "🥭", 6.20},
-            {"Orange",     "🍊", 3.20},
-            {"Pear",       "🍐", 4.10},
-            {"Peach",      "🍑", 5.40},
-            {"Pineapple",  "🍍", 4.80},
-            {"Strawberry", "🍓", 7.20},
-            {"Watermelon", "🍉", 2.60},
-            {"Kiwi",       "🥝", 6.00},
-            {"Coconut",    "🥥", 5.50},
-            {"Melon",      "🍈", 3.90}
+            {"Apple",      "🍎", 3.49},
+            {"Banana",     "🍌", 2.29},
+            {"Cherry",     "🍒", 8.99},
+            {"Date",       "🌰", 7.50},
+            {"Grape",      "🍇", 4.99},
+            {"Lemon",      "🍋", 2.79},
+            {"Mango",      "🥭", 5.99},
+            {"Orange",     "🍊", 3.19},
+            {"Pear",       "🍐", 3.89},
+            {"Peach",      "🍑", 4.99},
+            {"Pineapple",  "🍍", 3.99},
+            {"Strawberry", "🍓", 7.99},
+            {"Watermelon", "🍉", 1.99},
+            {"Kiwi",       "🥝", 5.49},
+            {"Coconut",    "🥥", 4.99},
+            {"Melon",      "🍈", 2.99}
         };
     } else if (categoryName == "Vegetables") {
         return {
-            {"Tomato",    "🍅", 2.90},
-            {"Potato",    "🥔", 1.80},
-            {"Carrot",    "🥕", 2.10},
-            {"Broccoli",  "🥦", 3.60},
-            {"Corn",      "🌽", 2.80},
-            {"Cucumber",  "🥒", 2.50},
-            {"Lettuce",   "🥬", 2.20},
-            {"Garlic",    "🧄", 4.30},
-            {"Onion",     "🧅", 1.90},
-            {"Pepper",    "🫑", 3.40},
-            {"Mushroom",  "🍄", 4.70},
-            {"Eggplant",  "🍆", 3.10}
+            {"Tomato",    "🍅", 3.29},
+            {"Potato",    "🥔", 1.69},
+            {"Carrot",    "🥕", 1.99},
+            {"Broccoli",  "🥦", 3.99},
+            {"Corn",      "🌽", 2.99},
+            {"Cucumber",  "🥒", 2.49},
+            {"Lettuce",   "🥬", 2.19},
+            {"Garlic",    "🧄", 5.99},
+            {"Onion",     "🧅", 1.79},
+            {"Pepper",    "🫑", 4.49},
+            {"Mushroom",  "🍄", 6.49},
+            {"Eggplant",  "🍆", 3.49}
         };
     } else {
         return {
-            {"Bread",      "🍞", 1.50},
-            {"Baguette",   "🥖", 2.20},
-            {"Croissant",  "🥐", 4.80},
-            {"Donut",      "🍩", 5.20},
-            {"Bagel",      "🥯", 3.60},
-            {"Pretzel",    "🥨", 3.80},
-            {"Cupcake",    "🧁", 6.20},
-            {"Pancake",    "🥞", 4.10},
-            {"Waffle",     "🧇", 4.50},
-            {"Cookie",     "🍪", 5.60},
-            {"Pie",        "🥧", 6.80},
-            {"Sandwich",   "🥪", 4.90}
+            {"Toast",      "🍞", 4.99},
+            {"Baguette",   "🥖", 3.99},
+            {"Croissant",  "🥐", 11.99},
+            {"Donut",      "🍩", 12.99},
+            {"Bagel",      "🥯", 8.99},
+            {"Pretzel",    "🥨", 7.99},
+            {"Cupcake",    "🧁", 14.99},
+            {"Pancake",    "🥞", 9.99},
+            {"Waffle",     "🧇", 10.99},
+            {"Cookie",     "🍪", 13.99},
+            {"Pie",        "🥧", 12.49},
+            {"Sandwich",   "🥪", 9.49}
         };
     }
 }
