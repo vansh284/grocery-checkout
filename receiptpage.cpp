@@ -10,10 +10,12 @@ ReceiptPage::ReceiptPage(CartData *cart, QWidget *parent)
     : Page(cart,
            Style::BTN_YELLOW,
            Style::BG_YELLOW,
-           false, false, true,
+           false,   // hasBack
+           false,    // hasHelp
+           true,    // hasLang
            parent)
 {
-    m_contentLayout->addStretch();
+    m_contentLayout->addSpacing(120);
 
     // title
     QLabel *title = new QLabel("Payment Completed!");
