@@ -13,6 +13,15 @@
 #include <QMenuBar>
 #include <QStatusBar>
 
+#include <QDialog>
+#include <QVBoxLayout>
+#include <QFormLayout>
+#include <QLineEdit>
+#include <QSpinBox>
+#include <QDoubleSpinBox>
+#include <QDialogButtonBox>
+#include <QLabel>
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
@@ -20,11 +29,7 @@ MainWindow::MainWindow(QWidget *parent)
     QMenu *systemMenu = menuBar()->addMenu("Simulation");
 
     QAction *scanAction = systemMenu->addAction("Scan");
-    //QAction *weightAction = systemMenu->addAction("Weigh");
     QAction *adminAction = systemMenu->addAction("Admin Mode");
-
-    Q_UNUSED(scanAction);
-    //Q_UNUSED(weightAction);
 
     setWindowTitle("Self-Checkout System");
     resize(1280, 768);
@@ -108,6 +113,74 @@ MainWindow::MainWindow(QWidget *parent)
         resetToWelcome();
     });
 
+    connect(scanAction, &QAction::triggered, this, [this]() {
+        QDialog dialog(this);
+        dialog.setWindowTitle("Simulate Scan");
+        dialog.setModal(true);
+        dialog.setFixedWidth(420);
+
+        QVBoxLayout *root = new QVBoxLayout(&dialog);
+        root->setContentsMargins(20, 20, 20, 20);
+        root->setSpacing(16);
+
+        QLabel *title = new QLabel("Add scanned item");
+        title->setFont(QFont("Arial", 18, QFont::Bold));
+        title->setStyleSheet("color: #111111;");
+        title->setAlignment(Qt::AlignCenter);
+        root->addWidget(title);
+
+        QFormLayout *form = new QFormLayout();
+        form->setSpacing(12);
+        form->setLabelAlignment(Qt::AlignLeft);
+
+        QLineEdit *nameEdit = new QLineEdit();
+        nameEdit->setPlaceholderText("Item name");
+        nameEdit->setText("Sample Item");
+
+        QSpinBox *qtySpin = new QSpinBox();
+        qtySpin->setRange(1, 999);
+        qtySpin->setValue(1);
+
+        QDoubleSpinBox *priceSpin = new QDoubleSpinBox();
+        priceSpin->setRange(0.01, 99999.99);
+        priceSpin->setDecimals(2);
+        priceSpin->setPrefix("€");
+        priceSpin->setSingleStep(0.10);
+        priceSpin->setValue(1.00);
+
+        form->addRow("Item name:", nameEdit);
+        form->addRow("Quantity:", qtySpin);
+        form->addRow("Unit price:", priceSpin);
+
+        root->addLayout(form);
+
+        QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+        root->addWidget(buttonBox);
+
+        connect(buttonBox, &QDialogButtonBox::accepted, &dialog, [&]() {
+            const QString itemName = nameEdit->text().trimmed();
+            const int qty = qtySpin->value();
+            const double price = priceSpin->value();
+
+            if (itemName.isEmpty()) {
+                nameEdit->setFocus();
+                return;
+            }
+
+            m_mainPage->addItem(itemName, qty, price);
+
+            if (m_stack->currentIndex() != PAGE_MAIN) {
+                navigateTo(PAGE_MAIN);
+            }
+
+            dialog.accept();
+        });
+
+        connect(buttonBox, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+
+        dialog.exec();
+    });
+
     connect(adminAction, &QAction::triggered, this, [this]() {
         if (m_stack->currentIndex() != PAGE_ADMIN) {
             m_adminPage->loadCart();
@@ -117,7 +190,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_adminPage, &AdminPage::logoutClicked, this, [this]() {
         m_mainPage->loadCart();
-        navigateTo(PAGE_MAIN);
+        onBackClicked();
     });
 
     m_stack->setCurrentIndex(PAGE_WELCOME);
@@ -139,6 +212,8 @@ void MainWindow::onLanguageSelected(const QString &langCode)
     m_categoryPage->updateLanguageFlag(langCode);
     m_itemDetailPage->updateLanguageFlag(langCode);
     m_helpPage->updateLanguageFlag(langCode);
+
+    m_mainPage->refreshUI();
     navigateTo(PAGE_MAIN);
 }
 
@@ -160,6 +235,4 @@ void MainWindow::resetToWelcome()
 {
     m_pageHistory.clear();
     m_stack->setCurrentIndex(PAGE_WELCOME);
-    m_mainPage->refreshUI();
 }
-
