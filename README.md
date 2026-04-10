@@ -94,7 +94,7 @@ This application is built using **C++ and the Qt Framework**. The architecture h
 
 ## 🚀 How to Run
 * Option 1 
-1. Clone the repository: `git clone ([Link to our repository](https://github.com/vansh284/grocery-checkout.git))`
+1. Clone the repository: `git clone https://github.com/vansh284/grocery-checkout.git`
 2. Open `grocery-checkout.pro` in **Qt Creator**.
 3. Configure the project for your local build kit (e.g., Desktop Qt/MinGW, MSVC, or GCC).
 4. Build (Using qMake) and Run the application.
