@@ -1,4 +1,3 @@
-#ifndef ADMINPAGE_H
 #define ADMINPAGE_H
 
 #include "page.h"
@@ -26,7 +25,7 @@ private:
     QLabel *m_subtotalLabel;
 
     // Helper function to create a single row in the admin list
-    void addAdminItemUI(const QString &name, int qty, double price, int index);
+    void addAdminItemUI(const CartItem &item, int index);
 };
 
 #endif // ADMINPAGE_H
