@@ -21,7 +21,7 @@ The system is divided into two primary modes: the **Customer Flow** and the **Ad
   * **Payment Methods:** Full support for both Cash and Card payment flows.
 
 ### 🛠️ Admin & Simulation Mode
-Accessible via the hidden "Sim" tab, this mode allows instructors or developers to manipulate the system state:
+Accessible via the hidden Simulation tab, this mode allows instructors or developers to manipulate the system state:
 * **Item Management:** Simulates item scanning to populate the customer's cart.
 * **Override Controls (Admin):** * Delete specific items from the cart (via the 'X' icon).
   * Manually add items by inputting a barcode or custom price.
