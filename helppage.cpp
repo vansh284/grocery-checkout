@@ -11,9 +11,9 @@ HelpPage::HelpPage(CartData *cart, QWidget *parent)
     : Page(cart,
            Style::BTN_YELLOW,
            Style::BG_YELLOW,
-           true,
            false,
-           true,
+           false,
+           false,
            parent)
 {
     m_contentLayout->setContentsMargins(0, 0, 0, 0);

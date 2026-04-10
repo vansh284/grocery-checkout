@@ -10,7 +10,7 @@ MainPage::MainPage(CartData *cart, QWidget *parent)
     : Page(cart,
            Style::BTN_YELLOW,
            Style::BG_YELLOW,
-           true,
+           false,
            true,
            true,
            parent)
@@ -419,6 +419,7 @@ void MainPage::showBagDialog()
 
 void MainPage::onPayClicked()
 {
+    if (m_cart->total == 0) return;
     QDialog dialog(this);
     dialog.setWindowFlags(Qt::Dialog | Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
     dialog.setModal(true);

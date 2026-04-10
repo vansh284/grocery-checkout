@@ -1,3 +1,4 @@
+#ifndef ADMINPAGE_H
 #define ADMINPAGE_H
 
 #include "page.h"
