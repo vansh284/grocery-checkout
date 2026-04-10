@@ -2,7 +2,7 @@
 
 A simulated software interface for a self-service grocery checkout kiosk. This project models the complete customer journey—from language selection and item scanning to bagging and payment—while also providing a robust Admin/Simulation dashboard for testing and troubleshooting.
 
-**Git Repository:** [Link to Repository](<LINK_TO_GIT_REPO>)
+**Git Repository:** (<[LINK_TO_REPO](https://github.com/vansh284/grocery-checkout.git)>)
 
 ---
 
