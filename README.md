@@ -1,10 +1,9 @@
 # 🛒 Grocery Self-Checkout System
-**By:** Vansh Nath, Yue Jia, Yongyan Luo and Lylia Mesa  
-[@Vansh](https://github.com/vansh284), [@Yue](https://github.com/mzozozn), [@Yongyan](https://github.com/Lomerson), [@Lylia](https://github.com/natsxki)
+**By:** Vansh Nath [@Vansh](https://github.com/vansh284), Yue Jia [@Yue](https://github.com/mzozozn), Yongyan Luo [@Yongyan](https://github.com/Lomerson) and Lylia Mesa (https://github.com/natsxki) 
 
 A simulated software interface for a self-service grocery checkout kiosk. This project models the complete customer journey—from language selection and item scanning to bagging and payment—while also providing a robust Admin/Simulation dashboard for testing and troubleshooting.
 
-**Git Repository:** ([Link to our repository](https://github.com/vansh284/grocery-checkout.git))
+**Git Repository:** [It's here :)](https://github.com/vansh284/grocery-checkout.git)
 
 
 ## 🌟 Implemented Functionality
