@@ -1,35 +1,36 @@
 #ifndef MAINPAGE_H
 #define MAINPAGE_H
 
-#include <QVBoxLayout>
-#include <QLabel>
 #include "page.h"
 #include "categorypage.h"
+
+class QLabel;
+class QVBoxLayout;
 
 class MainPage : public Page
 {
     Q_OBJECT
+
 public:
     explicit MainPage(CartData *cart, QWidget *parent = nullptr);
-    void refreshUI();   // used only to clear cart
-    void loadCart();    // used to load and refresh cart
+
+    void addItem(const QString &name, int qty, double price);
+    void addWeightedItem(const CategoryPage::WeightedItem &item, double weightKg);
+    void refreshUI();
+    void loadCart();
 
 signals:
     void checkoutConfirmed();
     void categoryRequested(const QString &categoryName);
 
-public slots:
-    void addWeightedItem(const CategoryPage::WeightedItem &item, double weightKg);
-
-private:
-    QVBoxLayout *m_itemsList = nullptr;
-    QLabel *m_subtotalLabel = nullptr;
-
-    void addItem(const QString &name, int qty, double price);
-
 private slots:
     void onPayClicked();
+
+private:
     void showBagDialog();
+
+    QVBoxLayout *m_itemsList;
+    QLabel *m_subtotalLabel;
 };
 
 #endif // MAINPAGE_H
