@@ -16,32 +16,32 @@ ItemDetailPage::ItemDetailPage(CartData *cart, QWidget *parent)
            true,
            parent)
 {
-    m_contentLayout->setContentsMargins(0, 20, 0, 20);
+    m_contentLayout->setContentsMargins(0, 34, 0, 26);
     m_contentLayout->setSpacing(0);
 
     m_categoryTitleLabel = new QLabel("Category");
     m_categoryTitleLabel->setAlignment(Qt::AlignCenter);
-    m_categoryTitleLabel->setFont(QFont("Arial", 40, QFont::Bold));
+    m_categoryTitleLabel->setFont(QFont("Arial", 44, QFont::Bold));
     m_categoryTitleLabel->setStyleSheet("color:#111111;");
     m_contentLayout->addWidget(m_categoryTitleLabel);
 
-    m_contentLayout->addSpacing(18);
+    m_contentLayout->addSpacing(24);
 
     QLabel *selectedText = new QLabel("You have selected :");
     selectedText->setAlignment(Qt::AlignCenter);
-    selectedText->setFont(QFont("Arial", 28));
+    selectedText->setFont(QFont("Arial", 30));
     selectedText->setStyleSheet("color:#111111;");
     m_contentLayout->addWidget(selectedText);
 
-    m_contentLayout->addSpacing(26);
+    m_contentLayout->addSpacing(34);
 
     QHBoxLayout *middleRow = new QHBoxLayout();
-    middleRow->setContentsMargins(140, 0, 140, 0);
-    middleRow->setSpacing(36);
+    middleRow->setContentsMargins(110, 0, 110, 0);
+    middleRow->setSpacing(40);
     middleRow->setAlignment(Qt::AlignCenter);
 
     QFrame *itemCard = new QFrame();
-    itemCard->setFixedSize(260, 230);
+    itemCard->setFixedSize(300, 250);
     itemCard->setStyleSheet(R"(
         background-color: #F0DE86;
         border: none;
@@ -49,16 +49,17 @@ ItemDetailPage::ItemDetailPage(CartData *cart, QWidget *parent)
     )");
 
     QVBoxLayout *itemCardLayout = new QVBoxLayout(itemCard);
+    itemCardLayout->setContentsMargins(16, 18, 16, 18);
     itemCardLayout->setAlignment(Qt::AlignCenter);
     itemCardLayout->setSpacing(8);
 
     m_selectedEmojiLabel = new QLabel("🍌");
     m_selectedEmojiLabel->setAlignment(Qt::AlignCenter);
-    m_selectedEmojiLabel->setFont(QFont("Arial", 72));
+    m_selectedEmojiLabel->setFont(QFont("Arial", 76));
 
     m_selectedNameLabel = new QLabel("Banana");
     m_selectedNameLabel->setAlignment(Qt::AlignCenter);
-    m_selectedNameLabel->setFont(QFont("Arial", 26, QFont::Bold));
+    m_selectedNameLabel->setFont(QFont("Arial", 28, QFont::Bold));
     m_selectedNameLabel->setStyleSheet("color:#111111;");
 
     itemCardLayout->addStretch();
@@ -67,23 +68,23 @@ ItemDetailPage::ItemDetailPage(CartData *cart, QWidget *parent)
     itemCardLayout->addStretch();
 
     QVBoxLayout *infoCol = new QVBoxLayout();
-    infoCol->setSpacing(22);
+    infoCol->setSpacing(24);
     infoCol->setAlignment(Qt::AlignVCenter);
 
     auto makeInfoRow = [&](const QString &labelText, QLabel *&valueLabel)
     {
         QHBoxLayout *row = new QHBoxLayout();
-        row->setSpacing(30);
+        row->setSpacing(26);
         row->setAlignment(Qt::AlignVCenter);
 
         QLabel *label = new QLabel(labelText);
-        label->setFixedWidth(360);
+        label->setFixedWidth(300);
         label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
         label->setFont(QFont("Arial", 30));
         label->setStyleSheet("color:#111111;");
 
         valueLabel = new QLabel();
-        valueLabel->setFixedSize(220, 92);
+        valueLabel->setFixedSize(240, 96);
         valueLabel->setAlignment(Qt::AlignCenter);
         valueLabel->setFont(QFont("Arial", 28));
         valueLabel->setStyleSheet(R"(
@@ -101,15 +102,15 @@ ItemDetailPage::ItemDetailPage(CartData *cart, QWidget *parent)
     infoCol->addLayout(makeInfoRow("Current Weight:", m_weightValueLabel));
     infoCol->addLayout(makeInfoRow("Total price:", m_priceValueLabel));
 
-    middleRow->addWidget(itemCard);
+    middleRow->addWidget(itemCard, 0, Qt::AlignVCenter);
     middleRow->addLayout(infoCol);
 
     m_contentLayout->addLayout(middleRow);
-    m_contentLayout->addSpacing(40);
+    m_contentLayout->addSpacing(52);
 
     QPushButton *addBtn = new QPushButton("Add item");
-    addBtn->setFixedSize(460, 105);
-    addBtn->setFont(QFont("Arial", 30, QFont::Bold));
+    addBtn->setFixedSize(530, 118);
+    addBtn->setFont(QFont("Arial", 34, QFont::Bold));
     addBtn->setCursor(Qt::PointingHandCursor);
     addBtn->setStyleSheet(R"(
         QPushButton {
