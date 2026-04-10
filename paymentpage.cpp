@@ -8,10 +8,12 @@ PaymentPage::PaymentPage(CartData *cart, QWidget *parent)
     : Page(cart,
            Style::BTN_YELLOW,
            Style::BG_YELLOW,
-           false, true, true,
+           false,   // hasBack
+           true,    // hasHelp
+           true,    // hasLang
            parent)
 {
-    m_contentLayout->addSpacing(40);
+    m_contentLayout->addSpacing(65);
 
     // Title
     QLabel *title = new QLabel("Select Payment Option");
@@ -38,17 +40,20 @@ PaymentPage::PaymentPage(CartData *cart, QWidget *parent)
         )");
 
         QVBoxLayout *cardLayout = new QVBoxLayout(card);
-        cardLayout->setAlignment(Qt::AlignCenter);
+        //cardLayout->setAlignment(Qt::AlignCenter);
+        cardLayout->setContentsMargins(20, 30, 20, 50);
+        cardLayout->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
         cardLayout->setSpacing(12);
 
         QLabel *emojiLabel = new QLabel(emoji);
         emojiLabel->setAlignment(Qt::AlignCenter);
-        emojiLabel->setFont(QFont("Arial", 72));
+        emojiLabel->setFont(QFont("Arial", 84));
         emojiLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
 
         QLabel *textLabel = new QLabel(label);
         textLabel->setAlignment(Qt::AlignCenter);
-        textLabel->setFont(QFont("Arial", 26));
+        textLabel->setFont(QFont("Arial", 32));
+        textLabel->setStyleSheet("color: #111111;");
         textLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
 
         cardLayout->addWidget(emojiLabel);
