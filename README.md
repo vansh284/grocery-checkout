@@ -2,6 +2,9 @@
 
 A simulated software interface for a self-service grocery checkout kiosk. This project models the complete customer journey—from language selection and item scanning to bagging and payment—while also providing a robust Admin/Simulation dashboard for testing and troubleshooting.
 
+**Git Repository:** [Link to Repository](<LINK_TO_GIT_REPO>)
+
+---
 
 ## 🌟 Implemented Functionality
 
@@ -42,25 +45,56 @@ The user interface is designed to mimic modern kiosk touchscreens, prioritizing 
 
 ## 📁 Code Organization
 
-*(Note: Adjust this section to perfectly match your specific language/framework, e.g., Java, Python, React, etc.)*
+This application is built using **C++ and the Qt Framework**. The architecture heavily utilizes a page-based navigation system to transition smoothly between the different checkout states.
 
-The codebase is structured to separate the graphical user interface from the underlying business logic and state management.
+```text
+└── grocery-checkout
+    ├── LICENSE
+    ├── README.md
+    ├── grocery-checkout.pro         # Qt Project configuration file
+    ├── grocery-checkout_fr_FR.ts    # Qt Translation file (French localization support)
+    ├── res.qrc                      # Qt Resource collection file for managing assets
+    │
+    ├── Core & Navigation
+    │   ├── main.cpp                 # Application entry point
+    │   ├── mainwindow.cpp / .h / .ui# Main application window and layout container
+    │   └── page.cpp / .h            # Base UI class inherited by all specific application views
+    │
+    ├── State & Configuration
+    │   ├── cartdata.h               # Data model defining the shopping cart and item structures
+    │   ├── config.h                 # Global application configurations and constants
+    │   └── style.h                  # Centralized UI styling and visual definitions
+    │
+    ├── User Interface Views (Pages)
+    │   ├── welcomepage.cpp / .h     # Initial language selection and "Start" screen
+    │   ├── mainpage.cpp / .h        # Primary scanning interface and simulation dashboard
+    │   ├── categorypage.cpp / .h    # High-level produce categories (Fruit, Veggie, Bread)
+    │   ├── itemdetailpage.cpp / .h  # Specific item selection and weighing interface
+    │   ├── paymentpage.cpp / .h     # Payment flow, bag selection, and tender types
+    │   ├── receiptpage.cpp / .h     # Post-transaction summary screen
+    │   └── helppage.cpp / .h        # Persistent support modal to call the attendant
+    │
+    ├── Admin & Tools
+    │   ├── adminpage.cpp / .h       # Admin dashboard (override controls, machine power)
+    │   └── numpaddialog.cpp / .h    # Custom on-screen numpad for manual barcode/price entry
+    │
+    └── img/                         # Embedded visual assets
+        ├── earth.png                # Language/Localization icon
+        ├── fr.png                   # French language toggle icon
+        └── uk.png                   # English language toggle icon
+```
 
-* `/src`
-  * `/components` *(or `/views`)*: Contains the visual elements of the application.
-    * `WelcomeScreen` - Handles language selection and initiation.
-    * `MainCheckout` - The primary scanning and receipt interface.
-    * `ProduceScale` - Interface for weighing fruits/veggies.
-    * `PaymentFlow` - Manages the confirmation, bag selection, and payment screens.
-  * `/admin` *(or `/sim`)*: Contains the logic and UI for the simulation tab and admin override controls.
-  * `/models` *(or `/core`)*: Defines the data structures for `Item`, `Cart`, and `Transaction`.
-  * `/controllers` *(or `/state`)*: Manages the central state of the application (e.g., current cart total, active language, admin authorization status).
-  * `/assets`: Contains localized strings, icons, and stylesheet data.
+### Component Breakdown
+* **Data Management:** `cartdata.h` acts as the single source of truth for the customer's current transaction, keeping the UI decoupled from the underlying business logic.
+* **Navigation:** `mainwindow.cpp` manages the transitions between various sub-pages (which all inherit from the base `page.h` class), ensuring a seamless kiosk experience.
+* **Localization:** Language selection is handled natively via Qt's internationalization tools (`.ts` files), allowing dynamic UI updates based on user preference on the `welcomepage`.
+* **Admin Flow:** Protected admin features are encapsulated in `adminpage.cpp`, supplemented by `numpaddialog.cpp` to ensure touchscreen-friendly data entry without requiring a physical keyboard.
 
 ---
 
 ## 🚀 How to Run
-
+* Option 1 
 1. Clone the repository: `git clone <LINK_TO_GIT_REPO>`
-2. Navigate to the project directory: `cd <PROJECT_FOLDER>`
-3. Run the application: `<INSERT_RUN_COMMAND>` *(e.g., `npm start`, `python main.py`, or instructions to compile in your IDE)*.
+2. Open `grocery-checkout.pro` in **Qt Creator**.
+3. Configure the project for your local build kit (e.g., Desktop Qt/MinGW, MSVC, or GCC).
+4. Build and Run the application.
