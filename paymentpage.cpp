@@ -8,6 +8,7 @@ PaymentPage::PaymentPage(CartData *cart, QWidget *parent)
     : Page(cart,
            Style::BTN_YELLOW,
            Style::BG_YELLOW,
+           false, true, true,
            parent)
 {
     m_contentLayout->addSpacing(40);

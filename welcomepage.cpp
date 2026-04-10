@@ -3,7 +3,10 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QFont>
+#include <QFile>
+#include <QDebug>
 #include "style.h"
+
 
 WelcomePage::WelcomePage(CartData *cart, QWidget *parent) 
     : QWidget(parent), m_cart(cart)
@@ -26,14 +29,8 @@ WelcomePage::WelcomePage(CartData *cart, QWidget *parent)
     flagsRow->setAlignment(Qt::AlignCenter);
     flagsRow->setSpacing(64);
 
-    const QList<std::tuple<QString,QString,QString>> flags = {
-                                                                { "🇬🇧", "en",    "English"  },
-                                                                { "🇫🇷", "fr",    "Français" },
-                                                                { "🌍", "other", "Other"    },
-                                                                };
-
-    for (const auto &[emoji, code, tip] : flags) {
-        QPushButton *btn = makeFlagButton(emoji, code, tip);
+    for (const auto &[path, code, tip] : Config::LanguageFlags) {
+        QPushButton *btn = makeFlagButton(path, code, tip);
         flagsRow->addWidget(btn);
     }
     root->addLayout(flagsRow);
@@ -44,12 +41,16 @@ WelcomePage::WelcomePage(CartData *cart, QWidget *parent)
     root->addWidget(subtitle);
 }
 
-QPushButton *WelcomePage::makeFlagButton(const QString &emoji, const QString &langCode, const QString &tooltip)
+QPushButton *WelcomePage::makeFlagButton(const QString &iconPath, const QString &langCode, const QString &tooltip)
 {
     const int SIZE   = 160;
     const int RADIUS = SIZE / 2;
 
-    QPushButton *btn = new QPushButton(emoji);
+    QPushButton *btn = new QPushButton();
+
+    btn->setIcon(QIcon(iconPath));
+    btn->setIconSize(QSize(150, 150));
+
     btn->setToolTip(tooltip);
     btn->setFixedSize(SIZE, SIZE);
     btn->setStyleSheet(Style::flagButtonSheet(RADIUS));

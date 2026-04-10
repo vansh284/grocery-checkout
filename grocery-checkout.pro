@@ -26,6 +26,7 @@ HEADERS += \
     adminpage.h \
     cartdata.h \
     categorypage.h \
+    config.h \
     helppage.h \
     itemdetailpage.h \
     mainpage.h \
@@ -49,3 +50,6 @@ CONFIG += embed_translations
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    res.qrc

@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QPushButton>
 #include "cartdata.h"
+#include "config.h"
 
 class WelcomePage : public QWidget
 {
@@ -17,7 +18,7 @@ signals:
 
 private:
     CartData *m_cart;
-    QPushButton *makeFlagButton(const QString &emoji, const QString &langCode, const QString &tooltip);
+    QPushButton *makeFlagButton(const QString &iconPath, const QString &langCode, const QString &tooltip);
 };
 
 #endif //WELCOMEPAGE_H

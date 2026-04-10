@@ -1,9 +1,6 @@
 #include "page.h"
-#include "style.h"
-#include <QHBoxLayout>
-#include <QPushButton>
-#include <QLabel>
 #include <QFont>
+#include <QIcon>
 
 Page::Page(CartData *cart,
            const QString &topBarColor,
@@ -14,6 +11,12 @@ Page::Page(CartData *cart,
            QWidget *parent)
     : QWidget(parent), m_cart(cart), m_flagLabel(nullptr)
 {
+    for (const auto& item : Config::LanguageFlags) {
+        // std::get<1> 是 langCode (如 "en")
+        // std::get<0> 是 iconPath (如 ":/img/uk.png")
+        m_flagMap.insert(std::get<1>(item), std::get<0>(item));
+    }
+
     setObjectName("pageRoot");
     setAttribute(Qt::WA_StyledBackground, true);
     setStyleSheet("QWidget#pageRoot { background-color: " + pageBGColor + "; }");
@@ -38,7 +41,7 @@ QWidget* Page::buildTopBar(const QString &color,
                            bool hasLang)
 {
     QWidget *topBar = new QWidget();
-    topBar->setFixedHeight(64);
+    topBar->setFixedHeight(70);
     topBar->setStyleSheet("background-color: " + color + ";");
 
     QHBoxLayout *barLayout = new QHBoxLayout(topBar);
@@ -56,15 +59,21 @@ QWidget* Page::buildTopBar(const QString &color,
     barLayout->addStretch();
 
     if (hasLang) {
-        const QMap<QString,QString> flagMap = {
-                                                {"en", "🇬🇧"}, {"fr", "🇫🇷"}, {"other", "🌍"},
-                                                };
-        m_flagLabel = new QLabel(flagMap.value(m_cart->language, "🇬🇧"));
-        m_flagLabel->setFont(QFont("Arial", 28));
-        m_flagLabel->setStyleSheet("background: transparent;");
+        QString iconPath = m_flagMap.value(m_cart->language, ":/img/uk.png");
+
+        const int SIZE   = 56;
+        const int RADIUS = SIZE / 2;
+
+        m_flagLabel = new QPushButton();
+        m_flagLabel->setIcon(QIcon(iconPath));
+        m_flagLabel->setIconSize(QSize(48, 48));
+        m_flagLabel->setFixedSize(SIZE, SIZE);
+        m_flagLabel->setCursor(Qt::PointingHandCursor);
+        m_flagLabel->setStyleSheet(Style::flagButtonSheet(RADIUS));
+
         barLayout->addWidget(m_flagLabel);
         barLayout->addSpacing(12);
-    }
+}
 
     if (hasHelp) {
         QPushButton *helpBtn = new QPushButton("  Help  ");
@@ -78,9 +87,7 @@ QWidget* Page::buildTopBar(const QString &color,
 
 void Page::updateLanguageFlag(const QString &langCode) {
     if (m_flagLabel) {
-        const QMap<QString,QString> flagMap = {
-                                                {"en", "🇬🇧"}, {"fr", "🇫🇷"}, {"other", "🌍"},
-                                                };
-        m_flagLabel->setText(flagMap.value(langCode, "🇬🇧"));
+        QString iconPath = m_flagMap.value(langCode, ":/img/uk.png");
+        m_flagLabel->setIcon(QIcon(iconPath));
     }
 }

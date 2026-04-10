@@ -3,8 +3,13 @@
 
 #include <QWidget>
 #include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QPushButton>
+#include <QLabel>
+#include <QFont>
+#include <QMap>
 #include "cartdata.h"
-
+#include "config.h"
 #include "style.h"
 
 class QLabel; 
@@ -33,9 +38,11 @@ protected:
     CartData *m_cart;
     QVBoxLayout *m_contentLayout;
     // Reserved space for content layout and flag label.
-    QLabel *m_flagLabel;
+    QPushButton *m_flagLabel;
 
 private:
+    QMap<QString, QString> m_flagMap;
+
     QWidget* buildTopBar(const QString &color,
                          bool hasBack=true,
                          bool hasHelp=true,

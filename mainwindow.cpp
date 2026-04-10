@@ -117,7 +117,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_adminPage, &AdminPage::logoutClicked, this, [this]() {
         m_mainPage->loadCart();
-        onBackClicked();
+        navigateTo(PAGE_MAIN);
     });
 
     m_stack->setCurrentIndex(PAGE_WELCOME);
@@ -139,8 +139,6 @@ void MainWindow::onLanguageSelected(const QString &langCode)
     m_categoryPage->updateLanguageFlag(langCode);
     m_itemDetailPage->updateLanguageFlag(langCode);
     m_helpPage->updateLanguageFlag(langCode);
-
-    m_mainPage->refreshUI();
     navigateTo(PAGE_MAIN);
 }
 
@@ -162,5 +160,6 @@ void MainWindow::resetToWelcome()
 {
     m_pageHistory.clear();
     m_stack->setCurrentIndex(PAGE_WELCOME);
+    m_mainPage->refreshUI();
 }
 

@@ -6,6 +6,49 @@
 #include <QPushButton>
 #include <QFrame>
 #include <QFont>
+#include <QPainter>
+#include <QPainterPath>
+
+class BackspaceButton : public QPushButton {
+public:
+    BackspaceButton(QWidget* parent = nullptr) : QPushButton("✖", parent) {
+        setFixedSize(60, 50);
+        setFont(QFont("Arial", 20, QFont::Bold));
+        setCursor(Qt::PointingHandCursor);
+    }
+
+protected:
+    void paintEvent(QPaintEvent* event) override {
+        // 不调用基类的 paintEvent，我们完全自己画
+        Q_UNUSED(event);
+        QPainter painter(this);
+        painter.setRenderHint(QPainter::Antialiasing); // 开启抗锯齿，边缘更平滑
+
+        int w = width();
+        int h = height();
+        int arrowWidth = 15; // 左侧尖角的宽度（你可以自己调）
+
+        // 定义多边形的 5 个顶点
+        QPolygon polygon;
+        polygon << QPoint(w, 0)                  // 右上角
+                << QPoint(w, h)                  // 右下角
+                << QPoint(arrowWidth, h)         // 左下折点
+                << QPoint(0, h / 2)              // 最左边尖角 (垂直居中)
+                << QPoint(arrowWidth, 0);        // 左上折点
+
+        // 根据鼠标按下/松开的状态，设置不同的红色
+        QColor bgColor = isDown() ? QColor("#B5403C") : QColor("#D45450");
+        painter.setPen(Qt::NoPen);   // 不需要边框线
+        painter.setBrush(bgColor);   // 填充颜色
+
+        // 绘制多边形背景
+        painter.drawPolygon(polygon);
+
+        // 绘制中间的 "✖" 文字
+        painter.setPen(Qt::white);
+        painter.drawText(rect(), Qt::AlignCenter, text());
+    }
+};
 
 NumpadDialog::NumpadDialog(Mode mode, QWidget *parent)
     : QDialog(parent),
@@ -48,18 +91,7 @@ NumpadDialog::NumpadDialog(Mode mode, QWidget *parent)
     QHBoxLayout *inputLayout = new QHBoxLayout();
 
     // 退格键 (两个模式通用，靠右侧)
-    QPushButton *backspaceBtn = new QPushButton("✖");
-    backspaceBtn->setFixedSize(60, 50);
-    backspaceBtn->setFont(QFont("Arial", 20, QFont::Bold));
-    backspaceBtn->setStyleSheet(
-        "QPushButton {"
-        "  background-color: #D45450;"
-        "  color: white;"
-        "  border: none;"
-        "  border-radius: 10px;"
-        "}"
-        "QPushButton:pressed { background-color: #B5403C; }"
-        );
+    BackspaceButton *backspaceBtn = new BackspaceButton();
     connect(backspaceBtn, &QPushButton::clicked, this, &NumpadDialog::onBackspaceClicked);
 
     if (m_mode == BarcodeMode) {
@@ -78,36 +110,41 @@ NumpadDialog::NumpadDialog(Mode mode, QWidget *parent)
     } else {
         // --- 价格模式的输入框 ---
         inputLayout->setAlignment(Qt::AlignCenter);
-        inputLayout->setSpacing(5);
 
-        m_euroDisplay = new QLineEdit("0");
+        // 创建一个“画板”容器，用来固定里面的绝对坐标
+        QWidget *priceContainer = new QWidget();
+        priceContainer->setFixedSize(290, 60);
+
+        m_euroDisplay = new QLineEdit("0", priceContainer);
         m_euroDisplay->setFixedSize(80, 60);
         m_euroDisplay->setFont(QFont("Arial", 24, QFont::Bold));
         m_euroDisplay->setAlignment(Qt::AlignCenter);
         m_euroDisplay->setReadOnly(true);
         // 安装事件过滤器以捕获点击
         m_euroDisplay->installEventFilter(this);
+        m_euroDisplay->setGeometry(85, 0, 80, 60);
 
-        QLabel *dotLabel = new QLabel(".");
+        QLabel *dotLabel = new QLabel(".", priceContainer);
         dotLabel->setFont(QFont("Arial", 32, QFont::Bold));
-        dotLabel->setStyleSheet("border: none; margin-bottom: 10px;"); // 让小数点靠下一点
+        dotLabel->setStyleSheet("border: none"); // 让小数点靠下一点
+        dotLabel->setGeometry(165, 10, 20, 50);
 
-        m_centDisplay = new QLineEdit("00");
+        m_centDisplay = new QLineEdit("00", priceContainer);
         m_centDisplay->setFixedSize(70, 60);
         m_centDisplay->setFont(QFont("Arial", 24, QFont::Bold));
         m_centDisplay->setAlignment(Qt::AlignCenter);
         m_centDisplay->setReadOnly(true);
         // 安装事件过滤器
         m_centDisplay->installEventFilter(this);
+        m_centDisplay->setGeometry(180, 0, 70, 60);
 
-        QLabel *euroSignLabel = new QLabel("€");
+        QLabel *euroSignLabel = new QLabel("€", priceContainer);
         euroSignLabel->setFont(QFont("Arial", 24, QFont::Bold));
-        euroSignLabel->setStyleSheet("border: none; margin-left: 5px; margin-right: 10px;");
+        euroSignLabel->setStyleSheet("border: none");
+        euroSignLabel->setGeometry(260, 0, 40, 60);
 
-        inputLayout->addWidget(m_euroDisplay);
-        inputLayout->addWidget(dotLabel);
-        inputLayout->addWidget(m_centDisplay);
-        inputLayout->addWidget(euroSignLabel);
+        inputLayout->addWidget(priceContainer);
+        inputLayout->addSpacing(15);
         inputLayout->addWidget(backspaceBtn);
 
         // 默认选中元
@@ -249,11 +286,13 @@ void NumpadDialog::onNumberClicked() {
         }
     }
     else if (m_activeField == FieldCents) {
-        QString t = m_centDisplay->text();
-        if (t == "00") t = ""; // 消除默认值
-        if (t.length() < 2) {
-            m_centDisplay->setText(t + val);
-        }
+        QString currentCents = m_centDisplay->text();
+        // 提取当前的第二位（即右边的数字），它将变成第一位（左边的数字）
+        QString newFirstChar = currentCents.right(1);
+        // 组合新的两位数：原来的右边位 + 新输入的数字
+        QString newCents = newFirstChar + val;
+
+        m_centDisplay->setText(newCents);
     }
 }
 
@@ -274,12 +313,19 @@ void NumpadDialog::onBackspaceClicked() {
         }
     }
     else if (m_activeField == FieldCents) {
-        QString t = m_centDisplay->text();
-        if (t != "00") {
-            t.chop(1);
-            if (t.isEmpty()) t = "00"; // 恢复默认值
-            m_centDisplay->setText(t);
-        }
+        QString currentCents = m_centDisplay->text();
+
+        // 如果已经是 00，就不做任何操作
+        if (currentCents == "00") return;
+
+        // 提取当前的第一位（即左边的数字），它将退回到第二位（右边的数字）
+        QString oldFirstChar = currentCents.left(1);
+
+        // 左边补 0，右边是原来左边的数字
+        QString newCents = "0" + oldFirstChar;
+
+        m_centDisplay->setText(newCents);
+        // =========================
     }
 }
 

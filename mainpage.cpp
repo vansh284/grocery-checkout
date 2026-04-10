@@ -10,6 +10,7 @@ MainPage::MainPage(CartData *cart, QWidget *parent)
     : Page(cart,
            Style::BTN_YELLOW,
            Style::BG_YELLOW,
+           false, true, true,
            parent)
 {
     QHBoxLayout *content = new QHBoxLayout();
@@ -340,11 +341,12 @@ void MainPage::showBagDialog()
 
 void MainPage::onPayClicked()
 {
+    if (m_cart->total == 0) return;
     QDialog dialog(this);
     dialog.setWindowFlags(Qt::Dialog | Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
     dialog.setModal(true);
     dialog.setAttribute(Qt::WA_TranslucentBackground);
-    dialog.setFixedSize(520, 240);
+    dialog.setFixedSize(560, 265);
 
     QVBoxLayout *root = new QVBoxLayout(&dialog);
     root->setContentsMargins(0, 0, 0, 0);
@@ -362,7 +364,7 @@ void MainPage::onPayClicked()
     card->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     QVBoxLayout *cardLayout = new QVBoxLayout(card);
-    cardLayout->setContentsMargins(40, 32, 40, 32);
+    cardLayout->setContentsMargins(20, 32, 20, 32);
     cardLayout->setSpacing(32);
 
     QLabel *title = new QLabel("Did you scan all your items?");
@@ -370,6 +372,7 @@ void MainPage::onPayClicked()
     title->setFont(QFont("Arial", 28, QFont::Bold));
     title->setStyleSheet("color: #111111; background: transparent; border: none;");
     cardLayout->addWidget(title);
+    // title->setWordWrap(true);
 
     QHBoxLayout *btnRow = new QHBoxLayout();
     btnRow->setAlignment(Qt::AlignCenter);

@@ -10,6 +10,7 @@ ReceiptPage::ReceiptPage(CartData *cart, QWidget *parent)
     : Page(cart,
            Style::BTN_YELLOW,
            Style::BG_YELLOW,
+           false, false, true,
            parent)
 {
     m_contentLayout->addStretch();
