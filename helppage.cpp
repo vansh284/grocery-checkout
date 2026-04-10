@@ -11,7 +11,9 @@ HelpPage::HelpPage(CartData *cart, QWidget *parent)
     : Page(cart,
            Style::BTN_YELLOW,
            Style::BG_YELLOW,
-           false, false, false,
+           true,
+           false,
+           true,
            parent)
 {
     m_contentLayout->setContentsMargins(0, 0, 0, 0);
@@ -66,3 +68,4 @@ HelpPage::HelpPage(CartData *cart, QWidget *parent)
 
     m_contentLayout->addLayout(bottomRow);
 }
+
