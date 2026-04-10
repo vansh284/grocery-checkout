@@ -23,6 +23,7 @@ AdminPage::AdminPage(CartData *cart, QWidget *parent)
 
     QLabel *listTitle = new QLabel("Scanned Items");
     listTitle->setFont(QFont("Arial", 24, QFont::Bold));
+    listTitle->setStyleSheet("color: black;");
     left->addWidget(listTitle);
 
     // Scroll area for items
@@ -46,10 +47,12 @@ AdminPage::AdminPage(CartData *cart, QWidget *parent)
 
     QLabel *subtotalText = new QLabel("Subtotal:");
     subtotalText->setFont(QFont("Arial", 24, QFont::Bold));
+    subtotalText->setStyleSheet("color: black;");
+
     m_subtotalLabel = new QLabel("€0.00");
     m_subtotalLabel->setFont(QFont("Arial", 24, QFont::Bold));
     m_subtotalLabel->setAlignment(Qt::AlignCenter);
-    m_subtotalLabel->setStyleSheet("background-color: white; border-radius: 8px; padding: 8px; min-width:120px;");
+    m_subtotalLabel->setStyleSheet("background-color: white; color: black; border-radius: 8px; padding: 8px; min-width:120px;");
 
     subtotalLayout->addWidget(subtotalText);
     subtotalLayout->addStretch();
@@ -58,11 +61,9 @@ AdminPage::AdminPage(CartData *cart, QWidget *parent)
 
     // Pay Button removed.
 
-
     QWidget *leftWidget = new QWidget();
     leftWidget->setLayout(left);
     leftWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
 
     // --- RIGHT SIDE: Add Items ---
     QVBoxLayout *right = new QVBoxLayout();
@@ -70,6 +71,7 @@ AdminPage::AdminPage(CartData *cart, QWidget *parent)
 
     QLabel *addTitle = new QLabel("Add Items");
     addTitle->setFont(QFont("Arial", 24, QFont::Bold));
+    addTitle->setStyleSheet("color: black;");
     right->addWidget(addTitle);
 
     // A Lambda that helps create buttons for adding items.
@@ -85,6 +87,7 @@ AdminPage::AdminPage(CartData *cart, QWidget *parent)
 
         QLabel *textLabel = new QLabel(text);
         textLabel->setFont(QFont("Arial", 22, QFont::Bold));
+        textLabel->setStyleSheet("color: black; background: transparent;");
 
         layout->addWidget(textLabel);
         layout->addStretch();
@@ -92,7 +95,7 @@ AdminPage::AdminPage(CartData *cart, QWidget *parent)
     };
 
     QPushButton *addPrice = makeMenuBtn("Manual Price");
-    QPushButton *addCode   = makeMenuBtn("Manual Barcode");
+    QPushButton *addCode  = makeMenuBtn("Manual Barcode");
 
     connect(addCode, &QPushButton::clicked, this, [this]() {
         NumpadDialog dialog(NumpadDialog::BarcodeMode, this);
@@ -104,6 +107,8 @@ AdminPage::AdminPage(CartData *cart, QWidget *parent)
             newItem.name = inputCode;
             newItem.qty = 1;
             newItem.price = 1.00;
+            newItem.weightKg = 0.0;
+            newItem.isWeighted = false;
             // refresh cart
             m_cart->items.append(newItem);
             m_cart->total += newItem.price;
@@ -119,6 +124,8 @@ AdminPage::AdminPage(CartData *cart, QWidget *parent)
             newItem.name = "Manual Item";
             newItem.qty = 1;
             newItem.price = dialog.getPrice();
+            newItem.weightKg = 0.0;
+            newItem.isWeighted = false;
             // refresh cart
             m_cart->items.append(newItem);
             m_cart->total += newItem.price;
@@ -127,9 +134,8 @@ AdminPage::AdminPage(CartData *cart, QWidget *parent)
         }
     });
 
-
     // LOG OUT Button
-    QPushButton *logoutBtn = new QPushButton("    LOG OUT");
+    QPushButton *logoutBtn = new QPushButton("LOG OUT");
     logoutBtn->setFixedHeight(100);
     logoutBtn->setFont(QFont("Arial", 28, QFont::Bold));
     logoutBtn->setCursor(Qt::PointingHandCursor);
@@ -152,7 +158,6 @@ AdminPage::AdminPage(CartData *cart, QWidget *parent)
 
     QWidget *rightWidget = new QWidget();
     rightWidget->setLayout(right);
-
 
     // Combine left and right
     content->addWidget(leftWidget, 1);
@@ -177,22 +182,24 @@ void AdminPage::loadCart()
     // 2. Re-populate the list directly from the shared m_cart data
     for (int i = 0; i < m_cart->items.size(); ++i) {
         const CartItem &item = m_cart->items[i];
-        addAdminItemUI(item.name, item.qty, item.price, i);
+        addAdminItemUI(item, i);
     }
 
     // 3. Update the subtotal
     m_subtotalLabel->setText("€" + QString::number(m_cart->total, 'f', 2));
 }
 
-void AdminPage::addAdminItemUI(const QString &name, int qty, double price, int index)
+void AdminPage::addAdminItemUI(const CartItem &item, int index)
 {
-    double itemTotal = qty * price;
+    const double itemTotal = item.isWeighted
+                                 ? (item.weightKg * item.price)
+                                 : (item.qty * item.price);
 
     QWidget *itemWidget = new QWidget();
     QHBoxLayout *itemLayout = new QHBoxLayout(itemWidget);
     itemLayout->setContentsMargins(12, 6, 12, 6);
 
-    // The Red 'X' Delete Button (Functionality can be added later)
+    // The Red 'X' Delete Button
     QPushButton *deleteBtn = new QPushButton("✖");
     deleteBtn->setFixedSize(32, 32);
     deleteBtn->setFont(QFont("Arial", 16, QFont::Bold));
@@ -200,39 +207,54 @@ void AdminPage::addAdminItemUI(const QString &name, int qty, double price, int i
     deleteBtn->setCursor(Qt::PointingHandCursor);
 
     connect(deleteBtn, &QPushButton::clicked, this, [this, index]() {
-        // 1. 安全检查，防止索引越界
         if (index < 0 || index >= m_cart->items.size()) return;
 
-        // 2. 数量减 1
-        m_cart->items[index].qty--;
-
-        // 3. 如果数量减到 0，直接从列表中移除该项
-        if (m_cart->items[index].qty <= 0) {
+        if (m_cart->items[index].isWeighted) {
+            // Weighted item: remove the whole row directly
             m_cart->items.removeAt(index);
+        } else {
+            // Normal item: reduce qty by 1
+            m_cart->items[index].qty--;
+            if (m_cart->items[index].qty <= 0) {
+                m_cart->items.removeAt(index);
+            }
         }
 
-        // 4. 重新计算购物车总价 (避免浮点数精度丢失导致奇怪的小数)
+        // Recalculate total
         m_cart->total = 0.0;
-        for (const auto &item : std::as_const(m_cart->items)) {
-            m_cart->total += (item.price * item.qty);
+        for (const auto &cartItem : std::as_const(m_cart->items)) {
+            if (cartItem.isWeighted) {
+                m_cart->total += (cartItem.weightKg * cartItem.price);
+            } else {
+                m_cart->total += (cartItem.price * cartItem.qty);
+            }
         }
 
-        // 5. 重新加载 UI，这会清空当前列表并根据更新后的 m_cart 重新生成
         loadCart();
     });
 
-    QLabel *qtyLabel = new QLabel(QString::number(qty));
+    QLabel *qtyLabel = new QLabel();
     qtyLabel->setFont(QFont("Arial", 18));
-    qtyLabel->setFixedWidth(60);
     qtyLabel->setAlignment(Qt::AlignCenter);
+    qtyLabel->setStyleSheet("color: black; background: transparent;");
 
-    QLabel *nameLabel = new QLabel(name);
+    if (item.isWeighted) {
+        qtyLabel->setText(QString::number(item.weightKg, 'f', 3) + " kg");
+        qtyLabel->setFixedWidth(100);
+    } else {
+        qtyLabel->setText(QString::number(item.qty));
+        qtyLabel->setFixedWidth(60);
+    }
+
+    QLabel *nameLabel = new QLabel(item.name);
     nameLabel->setFont(QFont("Arial", 18));
+    nameLabel->setStyleSheet("color: black; background: transparent;");
 
     QLabel *priceLabel = new QLabel("€" + QString::number(itemTotal, 'f', 2));
     priceLabel->setFont(QFont("Arial", 18));
     priceLabel->setFixedWidth(100);
     priceLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    priceLabel->setStyleSheet("color: black; background: transparent;");
 
     itemLayout->addWidget(deleteBtn);
     itemLayout->addSpacing(16);
