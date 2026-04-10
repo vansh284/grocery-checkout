@@ -1,10 +1,10 @@
 # 🛒 Grocery Self-Checkout System
+By Vansh Nath, Yue Jia, Yongyan Luo, Lylia Mesa
 
 A simulated software interface for a self-service grocery checkout kiosk. This project models the complete customer journey—from language selection and item scanning to bagging and payment—while also providing a robust Admin/Simulation dashboard for testing and troubleshooting.
 
-**Git Repository:** (<[LINK_TO_REPO](https://github.com/vansh284/grocery-checkout.git)>)
+**Git Repository:** ([Link to our repository](https://github.com/vansh284/grocery-checkout.git))
 
----
 
 ## 🌟 Implemented Functionality
 
@@ -94,7 +94,7 @@ This application is built using **C++ and the Qt Framework**. The architecture h
 
 ## 🚀 How to Run
 * Option 1 
-1. Clone the repository: `git clone <LINK_TO_GIT_REPO>`
+1. Clone the repository: `git clone ([Link to our repository](https://github.com/vansh284/grocery-checkout.git))`
 2. Open `grocery-checkout.pro` in **Qt Creator**.
 3. Configure the project for your local build kit (e.g., Desktop Qt/MinGW, MSVC, or GCC).
-4. Build and Run the application.
+4. Build (Using qMake) and Run the application.
